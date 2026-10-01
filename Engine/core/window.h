@@ -1,10 +1,28 @@
 #pragma once
 #include <SDL3/SDL.h>
 
-namespace Window
-{
-    bool Init(const char* title, int width, int height);
-    SDL_Window* GetNativeWindow();
-    Uint32 GetWindowID();
-    void Destroy();
+
+namespace window {
+	
+	class Window {
+	public:
+		Window();
+		~Window();
+
+		bool Init();
+		//void run();
+		void Shutdown();
+
+		SDL_Window* GetWindow() const 
+		{ 
+			return m_window; 
+		}
+
+	private:
+		SDL_Window* m_window = nullptr;
+		
+	
+	};
+
+
 }

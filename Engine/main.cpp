@@ -1,16 +1,22 @@
-#include "Engine.h"
-#include "core/Logger.h"
-
-int main(int argc, char* argv[])
+#include "logger.h"
+#include "engine.h"
+#include <iostream>
+int main(int argc, char* argv[]) 
 {
-    Logger::Init();
 
-    if (Engine::Init())
-    {
-        Engine::Run();
-    }
+	logger::Logger::SetLevel(0);
 
-    Engine::Destroy();
+	logger::CreateLogFile();
+	
+	engine::Engine app;
+	if (app.Init()) {
+			
+		app.Run();
 
-    return 0;
+	}
+
+
+	
+
+	return 0;
 }

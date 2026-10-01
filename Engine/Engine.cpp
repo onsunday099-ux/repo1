@@ -1,89 +1,95 @@
 #include "engine.h"
-#include "window.h"
-#include "timer.h"
-#include "gui_layer.h"
-#include "scene_manager.h"
-#include "game_scene.h"
-#include "event_manager.h"
-#include "audio.h"
-#include "renderer.h"
-#include <SDL3/SDL.h>
-#include <spdlog/spdlog.h>
-#include <memory>
 
-namespace Engine
+
+namespace engine 
 {
-    static bool is_running = true;
 
-    static void Mainloop()
+    Engine::Engine() = default;
+
+    Engine::~Engine()
     {
-        while (is_running)
-        {
-            Timer::FrameStart();
-
-            if (!EventManager::PollEvents())
-            {
-                is_running = false;
-            }
-
-            SceneManager::Update(Timer::GetDeltaTime());
-
-            SceneManager::Render();
-
-            GuiLayer::BeginFrame();
-            GuiLayer::DrawAudioPanel();
-            GuiLayer::EndFrame(Renderer::GetNativeRenderer());
-
-            Renderer::Present();
-
-            Timer::FrameEnd();
-        }
+        Shutdown();
     }
 
-    bool Init()
+
+    bool Engine::Init() 
     {
-        Timer::Init(240);
-
-        if (!Window::Init("SDL3 From Engine", 1280, 720))
-        {
+        if (!m_window.Init() ) {
+            spdlog::error("Cant init window: %s", SDL_GetError());
             return false;
         }
 
-        if (!Renderer::Init(Window::GetNativeWindow()))
-        {
-            spdlog::error("Renderer Init failed");
+        // เรียก Init ของ Renderer โดยส่งพอยน์เตอร์จาก GetWindow() เข้าไป
+        if (!m_renderer.Init(m_window.GetWindow())) {
+            spdlog::error("Cant init engine %s", SDL_GetError());
             return false;
         }
 
-        if (!audio::Init())
-        {
-            spdlog::error("AudioInit failed");
-            return false;
-        }
+        m_renderer.LoadTexture("Test/bg/bg2.jpg");
+        
+        m_running = true;
+        //true คือrunอยู่ false คือไม่ได้run
+        
 
-        if (!GuiLayer::Init(Window::GetNativeWindow(), Renderer::GetNativeRenderer()))
-        {
-            spdlog::error("GuiLayer Init failed");
-            return false;
-        }
-
-        SceneManager::ChangeScene(std::make_unique<GameScene>());
-
-        spdlog::info("Engine initialized");
         return true;
     }
 
-    void Run()
+    void Engine::Shutdown()
     {
-        Mainloop();
+        m_renderer.Shutdown();
+        m_window.Shutdown();
+        SDL_Quit();
     }
 
-    void Destroy()
+    void Engine::ProcessEvents() 
     {
-        SceneManager::Destroy();
-        GuiLayer::Destroy();
-        audio::DestroyAudio();
-        Renderer::Destroy();
-        Window::Destroy();
+        SDL_Event Event;
+        while (SDL_PollEvent(&Event))
+        {
+            if (Event.type == SDL_EVENT_QUIT)
+            {
+                m_running = false;
+
+            }
+
+        }
     }
+
+
+    // เรียก Render ของ Renderer ที่นี่
+    void Engine::Update() 
+    {
+
+    }
+
+    void Engine::Render() 
+    {
+        m_renderer.Render();
+    }
+
+   
+    void Engine::Run() 
+    {
+        
+
+        while (m_running)
+        {
+            ProcessEvents();
+            Update();
+            Render();
+        }
+
+    }
+  
 }
+
+
+
+
+
+
+
+
+
+
+

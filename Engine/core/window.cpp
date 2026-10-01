@@ -1,52 +1,52 @@
+#include <SDL3/SDL.h>
 #include "window.h"
+#include "logger.h"
 #include <spdlog/spdlog.h>
 
-namespace Window
-{
-    static SDL_Window* window = nullptr;
+namespace window {
+	
+	Window::Window() = default;
+	Window::~Window() {
+		Shutdown();
+	}
+	
 
-    bool Init(const char* title, int width, int height)
-    {
-        if (!SDL_Init(SDL_INIT_VIDEO))
-        {
-            spdlog::error("SDL_Init failed: {}", SDL_GetError());
-            return false;
-        }
+	bool Window::Init() {
+		
 
-        window = SDL_CreateWindow(title, width, height, SDL_WINDOW_RESIZABLE);
-        if (!window)
-        {
-            spdlog::error("SDL_CreateWindow failed: {}", SDL_GetError());
-            return false;
-        }
+		if (!SDL_Init(SDL_INIT_VIDEO)) {
+			
+			spdlog::error("SDL_Init failed: %s", SDL_GetError());
+			SDL_Log("SDL_Init failed: %s", SDL_GetError());
+			return false;
+		}
 
-        return true;
-    }
+		m_window = SDL_CreateWindow(
+			"Window",
+			1280,
+			720,
+			0
+		);
 
-    SDL_Window* GetNativeWindow()
-    {
-        return window;
-    }
+		if (!m_window) {
+			spdlog::error("Error create window: %s", SDL_GetError());
+			return false;
+		}
 
-    Uint32 GetWindowID()
-    {
-        if (window)
-        {
-            return SDL_GetWindowID(window);
-        }
-        return 0;
-    }
+		spdlog::info("Window created successfully");
+		return true;
+	}
 
-    void Destroy()
-    {
-        if (window)
-        {
-            SDL_DestroyWindow(window);
-            window = nullptr;
-        }
+	//void run() {
+	//	
+	//}
 
-        SDL_Quit();
-    }
+	void Window::Shutdown() {
+		SDL_DestroyWindow(m_window);
+		m_window = nullptr;
+	}
+
+
+
 }
-
-
+	

@@ -1,52 +1,73 @@
 #include "renderer.h"
-#include <spdlog/spdlog.h>
+#include <SDL3_image/SDL_image.h>
 
-namespace Renderer
-{
-    static SDL_Renderer* renderer = nullptr;
 
-    bool Init(SDL_Window* window)
-    {
-        renderer = SDL_CreateRenderer(window, NULL);
-        if (!renderer)
-        {
-            spdlog::error("SDL_CreateRenderer failed: {}", SDL_GetError());
-            return false;
-        }
+namespace renderer {
 
-        return true;
-    }
+	Renderer::Renderer() = default;
 
-    void Clear(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
-    {
-        SDL_SetRenderDrawColor(renderer, r, g, b, a);
-        SDL_RenderClear(renderer);
-    }
+	Renderer::~Renderer() {
+		Shutdown();
+	}
 
-    void DrawTexture(SDL_Texture* texture, const SDL_FRect* src, const SDL_FRect* dst)
-    {
-        if (texture)
-        {
-            SDL_RenderTexture(renderer, texture, src, dst);
-        }
-    }
+	bool Renderer::Init(SDL_Window* window) {
+		
+		if (!window) {
+			spdlog::error("Renderer init: {}",SDL_GetError());
+			return false;
+		}
 
-    void Present()
-    {
-        SDL_RenderPresent(renderer);
-    }
+		m_renderer = SDL_CreateRenderer(window, nullptr);
 
-    SDL_Renderer* GetNativeRenderer()
-    {
-        return renderer;
-    }
+		if (!m_renderer) {
+			spdlog::error("Failed to create renderer: {}", SDL_GetError());
+			return false;
+		}
+		spdlog::info("Renderer created successfully");
+		return true;
+	}
 
-    void Destroy()
-    {
-        if (renderer)
-        {
-            SDL_DestroyRenderer(renderer);
-            renderer = nullptr;
-        }
-    }
+	bool Renderer::LoadTexture(const char* filePath) {
+		if (!m_renderer) {
+			spdlog::error("Cannot load texture: Renderer not init");
+			return false;
+		}
+
+		m_texture = IMG_LoadTexture(m_renderer, filePath);
+
+		if (!m_texture) {
+			spdlog::error("Failed to load image {}: {}", filePath, SDL_GetError());
+			return false;
+		}
+
+		spdlog::info("Loaded image successfully: {}", filePath);
+		return true;
+	}
+
+	void Renderer::Render()
+	{
+		if (!m_renderer) return;
+
+		SDL_RenderClear(m_renderer);
+
+		if (m_texture) {
+			SDL_RenderTexture(m_renderer, m_texture, nullptr, nullptr);
+		}
+		SDL_RenderPresent(m_renderer);
+	}
+
+	void Renderer::Shutdown()
+	{
+		if (m_texture) {
+			SDL_DestroyTexture(m_texture);
+			m_texture = nullptr;
+		}
+
+		if (m_renderer) {
+			SDL_DestroyRenderer(m_renderer);
+			m_renderer = nullptr;
+		}
+	}
 }
+
+//.dds
