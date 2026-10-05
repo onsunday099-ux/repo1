@@ -1,45 +1,61 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <variant>
 
-// ประเภทของคำสั่งในเกม
-
-enum class CommandType
-{
-	None,
-	SetBackground,
-	Dialogue,
-	Wait,
-	PlaySound,
-
+enum class CommandType {
+    Scene,          // scene <bg_id> [fade|instant]
+    Show,           // show <char_id> <expr> [at left|center|right]
+    Hide,           // hide <char_id>
+    Dialogue,       // speaker "text" หรือ "narrator text"
+    Menu,           // menu:
+    Jump,           // jump <label>
+    Label           // label <name>:
 };
 
-// transition effect i guess
-enum class TransitionType
-{
-	//None,
-	Instant,
-	Crossfade,
-	FadeBlack,	
+// Data Structures
+struct SceneData {
+    std::string background_id;
+    std::string transition = "instant";
 };
 
-struct BackgroudData 
-{
-	std::string assetId;	//name "bg/bg2.jpg"
-	TransitionType transition;
-	float duration = 1.0f;	//fade time
+struct ShowData {
+    std::string character_id;
+    std::string expression = "default";
+    std::string position = "center";
 };
 
-struct DialogueData
-{
-	std::string speaker;	//name "character name"
-	std::string text;		//text "Hello world"
+struct HideData {
+    std::string character_id;
 };
+
+struct DialogueData {
+    std::string speaker; // ว่างไว้ถ้าเป็น Narrator
+    std::string text;
+};
+
+struct MenuChoice {
+    std::string text;
+    std::string target_label;
+};
+
+struct MenuData {
+    std::vector<MenuChoice> choices;
+};
+
+// รวม Payload ทั้งหมด
+using CommandPayload = std::variant<
+    std::monostate,
+    SceneData,
+    ShowData,
+    HideData,
+    DialogueData,
+    MenuData,
+    std::string // ใช้สำหรับ Jump target
+>;
 
 struct ScriptCommand {
-	CommandType type = CommandType::None;
-	BackgroudData bgData;
-	DialogueData dialogueData;
-	int lineNumber = 0;	//line number in script file for debug
-
+    CommandType type;
+    CommandPayload payload;
+    int line_number = 0;
 };
