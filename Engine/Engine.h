@@ -26,6 +26,7 @@ namespace engine {
 
 		window::Window m_window;
 		renderer::Renderer m_renderer;
+		audio::Audio m_audio;
 		//renderer::Renderer m_renderer;
 		//audio::Audio m_audio;
 	};

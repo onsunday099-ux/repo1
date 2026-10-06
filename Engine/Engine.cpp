@@ -1,4 +1,5 @@
 #include "engine.h"
+#include "script.h"
 
 
 namespace engine 
@@ -26,12 +27,12 @@ namespace engine
         }
         
 
-        if (!audio::Audio::Init) {
-            spdlog::error("Cant init audio %s", SDL_GetError());
+        if (!m_audio.Init()) {
+            spdlog::error("Cant init audio");
             return false;
         }
 
-        
+        script::test(m_renderer, m_audio);
         
         m_running = true;
         //true คือrunอยู่ false คือไม่ได้run
@@ -42,6 +43,7 @@ namespace engine
 
     void Engine::Shutdown()
     {
+        m_audio.Shutdown();
         m_renderer.Shutdown();
         m_window.Shutdown();
         SDL_Quit();
