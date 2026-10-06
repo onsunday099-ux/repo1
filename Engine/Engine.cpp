@@ -59,7 +59,7 @@ namespace engine
     // เรียก Render ของ Renderer ที่นี่
     void Engine::Update() 
     {
-
+        
     }
 
     void Engine::Render() 

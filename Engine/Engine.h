@@ -1,7 +1,6 @@
 #pragma once
 #include "window.h"
 #include "renderer/renderer.h"
-#include "script/script_parser.h"
 #include <spdlog/spdlog.h>
 
 namespace engine {
@@ -30,3 +29,4 @@ namespace engine {
 	};
 	
 }
+

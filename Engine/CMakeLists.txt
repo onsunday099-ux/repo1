@@ -30,6 +30,7 @@ target_include_directories(EngineLib PUBLIC
 )
 
 target_link_libraries(EngineLib PUBLIC
+    Miniaudio::Miniaudio
     SDL3::SDL3
     SDL3_image::SDL3_image
     SDL3_ttf::SDL3_ttf
