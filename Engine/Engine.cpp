@@ -24,8 +24,14 @@ namespace engine
             spdlog::error("Cant init engine %s", SDL_GetError());
             return false;
         }
+        
 
-        m_renderer.LoadTexture("Test/bg/bg2.jpg");
+        if (!audio::Audio::Init) {
+            spdlog::error("Cant init audio %s", SDL_GetError());
+            return false;
+        }
+
+        
         
         m_running = true;
         //true คือrunอยู่ false คือไม่ได้run

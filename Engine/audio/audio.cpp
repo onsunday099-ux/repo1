@@ -3,6 +3,7 @@
 
 namespace audio {
 	Audio::Audio() {
+		Audio::Init();
 		isInitialized = false;
 	}
 
