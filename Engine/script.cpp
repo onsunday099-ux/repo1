@@ -5,8 +5,8 @@
 namespace script {
 
     void testScene(renderer::Renderer& renderer, audio::Audio& audio) {
-        audio.Play("assets/sound/song1.flac"); // ✅ เรียกผ่าน audio object
-        renderer.LoadTexture("Test/bg/bg2.jpg");
+        audio.Play("assets/sound/song1.flac"); 
+        renderer.LoadTexture("assets/bg/bg2.jpg");
     }
 
     void test(renderer::Renderer& renderer, audio::Audio& audio) {

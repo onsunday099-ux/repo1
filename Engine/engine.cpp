@@ -1,9 +1,9 @@
 #include "engine.h"
+#include "script.h"
 
 
 namespace engine 
 {
-
 
     Engine::Engine() = default;
 
@@ -25,8 +25,14 @@ namespace engine
             spdlog::error("Cant init engine %s", SDL_GetError());
             return false;
         }
+        
 
-        m_renderer.LoadTexture("Test/bg/bg2.jpg");
+        if (!m_audio.Init()) {
+            spdlog::error("Cant init audio");
+            return false;
+        }
+
+        script::test(m_renderer, m_audio);
         
         m_running = true;
         //true คือrunอยู่ false คือไม่ได้run
@@ -37,6 +43,7 @@ namespace engine
 
     void Engine::Shutdown()
     {
+        m_audio.Shutdown();
         m_renderer.Shutdown();
         m_window.Shutdown();
         SDL_Quit();
@@ -60,7 +67,7 @@ namespace engine
     // เรียก Render ของ Renderer ที่นี่
     void Engine::Update() 
     {
-
+        
     }
 
     void Engine::Render() 
